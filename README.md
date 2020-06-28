@@ -1,8 +1,8 @@
 # at-gui
-A gui interface of at command
+A gui interface of "at" command. (linux)
 
-- 鼠标只点一次的at命令提醒软件。
+- 鼠标只点一次的at命令提醒软件。Only one click.
 
 ![at-gui](src/at-gui.png)
 
-- 提醒时，有一个东西在摇晃。
+- 提醒时，有一个东西在摇晃。Something is rocking.
