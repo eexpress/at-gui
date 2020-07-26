@@ -18,6 +18,7 @@ public class Timer : Gtk.Window {
 	const string M_COLOR="#57C575";
 
 	int mm = 0;
+	int hh = 0; bool kp = false; int scale = 60; double degree = 0;
 	Gdk.RGBA cc;
 //----------------------------
 	public Timer() {
@@ -25,7 +26,8 @@ public class Timer : Gtk.Window {
 		decorated = false; app_paintable = true;
 		set_visual(this.get_screen().get_rgba_visual());
 		set_size_request(size,size);
-		add_events (Gdk.EventMask.BUTTON_PRESS_MASK|Gdk.EventMask.POINTER_MOTION_MASK);
+		add_events (Gdk.EventMask.BUTTON_PRESS_MASK|Gdk.EventMask.POINTER_MOTION_MASK|
+					Gdk.EventMask.KEY_PRESS_MASK|Gdk.EventMask.KEY_RELEASE_MASK);
 		destroy.connect (Gtk.main_quit);
 		draw.connect (on_draw);
 //----------鼠标移动事件。
@@ -34,36 +36,49 @@ public class Timer : Gtk.Window {
 			x=(int)(e.x-size/2); y=(int)(e.y-size/2);
 			int d=(int)Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
 			if(d<MIN || d>MAX) return true;	//有效圆环
-			double cm=Math.atan2(y, x)/(Math.PI/180)+90;
-			if(cm<0) cm+=360;
-			mm=(int)(cm/6);
+			degree=Math.atan2(y, x)/(Math.PI/180)+90;
+			if(degree<0) degree+=360;
 			queue_draw();
 			return true;
 		});
 //----------鼠标点击事件。
-	button_press_event.connect ((e) => {
-		int x; int y;
-		x=(int)(e.x-size/2); y=(int)(e.y-size/2);
-		int d=(int)Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
-		if(d>MAX) return true;	//有效圆环以外
-		if(d<MIN){	//圆心之内
-			if(e.button == 1){
-				begin_move_drag ((int)e.button, (int)e.x_root, (int)e.y_root, e.time);
+		button_press_event.connect ((e) => {
+			int x; int y;
+			x=(int)(e.x-size/2); y=(int)(e.y-size/2);
+			int d=(int)Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
+			if(d>MAX) return true;	//有效圆环以外
+			if(d<MIN){	//圆心之内
+				if(e.button == 1){
+					begin_move_drag ((int)e.button, (int)e.x_root, (int)e.y_root, e.time);
+				}
+				else Gtk.main_quit();
+				return true;
 			}
-			else Gtk.main_quit();
+			if(e.button == 1){	//有效圆环
+				if(kp){	hh=mm; return true; }
+				stdout.printf("at now + %d minutes\n",hh*60+mm);
+				Posix.system("at-gui.bash %d".printf(hh*60+mm));
+	//~ echo 'export DISPLAY=:0.0 && /home/eexpss/bin/rockpng "/home/eexpss/图片/s.png"' |\at "now + 1 minutes"
+				Gtk.main_quit();
+			}
 			return true;
-		}
-		if(e.button == 1){	//有效圆环
-			stdout.printf("at now + %d minutes\n",mm);
-			Posix.system("at-gui.bash %d".printf(mm));
-//~ echo 'export DISPLAY=:0.0 && /home/eexpss/bin/rockpng "/home/eexpss/图片/s.png"' |\at "now + 1 minutes"
-			Gtk.main_quit();
-		}
-		return true;
-	});
-}
+		});
+//----------按键事件。
+		key_press_event.connect ((e) => {
+			if(e.keyval == Gdk.Key.Control_L || e.keyval == Gdk.Key.Control_R)
+			{ kp=true; scale = 24; queue_draw(); }
+			return true;
+		});
+		key_release_event.connect ((e) => {
+			if(e.keyval == Gdk.Key.Control_L || e.keyval == Gdk.Key.Control_R)
+			{ kp=false; scale = 60; queue_draw(); }
+			return true;
+		});
+	}
 //---------------------
 	private bool on_draw (Context ctx) {
+		mm=(int)(degree*scale/360);
+
 		ctx.translate(size/2, size/2);	//窗口中心为坐标原点。
 		ctx.set_line_cap (Cairo.LineCap.ROUND);
 		ctx.set_operator (Cairo.Operator.SOURCE);
@@ -74,12 +89,12 @@ public class Timer : Gtk.Window {
 //---------------------刻度
 		ctx.save();
 		cc.parse(F_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 1);
-		for(int i=0;i<60;i++){
-			ctx.set_line_width (2);
+		for(int i=0;i<scale;i++){
+			ctx.set_line_width (2*(kp?3:1));
 			ctx.move_to(0,-MAX);
-			if(i%5==0){	ctx.rel_line_to(0,15); }else{ ctx.rel_line_to(0,5); }
+			if(! kp && i%5==0){ ctx.rel_line_to(0,15); }else{ ctx.rel_line_to(0,5); }
 			ctx.stroke();
-			ctx.rotate(6*(Math.PI/180));	//6度一个刻度
+			ctx.rotate((360/scale)*(Math.PI/180));	//6度一个刻度
 		}
 		ctx.restore();
 //---------------------增加一个扇形延时显示
@@ -87,7 +102,8 @@ public class Timer : Gtk.Window {
 		cc.parse(M_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.6);
 		ctx.rotate(-Math.PI/2);
 		ctx.move_to(0,0);
-		ctx.arc(0,0,size/2-size/8,0,mm*Math.PI/30);
+//~ 		ctx.arc(0,0,size/2-size/8,0,mm*2*Math.PI/scale);	//阶段性刻度
+		ctx.arc(0,0,size/2-size/8,0,degree*Math.PI/180);	//顺滑的刻度
 		ctx.fill();
 		ctx.restore();
 //---------------------圆心
