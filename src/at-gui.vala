@@ -76,6 +76,15 @@ public class Timer : Gtk.Window {
 		});
 	}
 //---------------------
+	private void align_show(Context ctx, int i, double size){
+		ctx.set_font_size(size);
+		string showtext="%d".printf(i);
+		Cairo.TextExtents ex;
+		ctx.text_extents (showtext, out ex);
+		ctx.rel_move_to(-ex.width/2,ex.height/2);
+		ctx.show_text(showtext);
+		}
+//---------------------
 	private bool on_draw (Context ctx) {
 		mm=(int)(degree*scale/360);
 
@@ -86,25 +95,31 @@ public class Timer : Gtk.Window {
 		cc.parse(B_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.8);
 		ctx.arc(0,0,size/2-size/20,0,2*Math.PI);
 		ctx.fill();
-//---------------------刻度
-		ctx.save();
-		cc.parse(F_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 1);
-		for(int i=0;i<scale;i++){
-			ctx.set_line_width (2*(kp?3:1));
-			ctx.move_to(0,-MAX);
-			if(! kp && i%5==0){ ctx.rel_line_to(0,15); }else{ ctx.rel_line_to(0,5); }
-			ctx.stroke();
-			ctx.rotate((360/scale)*(Math.PI/180));	//6度一个刻度
-		}
-		ctx.restore();
 //---------------------增加一个扇形延时显示
 		ctx.save();
 		cc.parse(M_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.6);
 		ctx.rotate(-Math.PI/2);
 		ctx.move_to(0,0);
-//~ 		ctx.arc(0,0,size/2-size/8,0,mm*2*Math.PI/scale);	//阶段性刻度
-		ctx.arc(0,0,size/2-size/8,0,degree*Math.PI/180);	//顺滑的刻度
+		ctx.arc(0,0,size/2-size/8,0,mm*2*Math.PI/scale);	//阶段性刻度
+//~ 		ctx.arc(0,0,size/2-size/8,0,degree*Math.PI/180);	//顺滑的刻度
 		ctx.fill();
+		ctx.restore();
+//---------------------刻度
+		ctx.save();
+		cc.parse(F_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 1);
+		for(int i=0;i<scale;i++){
+//~ 			ctx.set_line_width (2*(kp?2:1));
+			ctx.set_line_width (2);
+			ctx.move_to(0,-MAX);
+			if(! kp && i%5==0){ ctx.rel_line_to(0,15); }else{ ctx.rel_line_to(0,5); }
+			if(i%(scale/4)==0){
+				if(kp){ctx.rel_line_to(0,10);}
+				ctx.rel_move_to(0,20);
+				align_show(ctx, i, size/20);
+				}
+			ctx.stroke();
+			ctx.rotate((360/scale)*(Math.PI/180));	//6度一个刻度
+		}
 		ctx.restore();
 //---------------------圆心
 		cc.parse(F_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 1);
@@ -112,12 +127,8 @@ public class Timer : Gtk.Window {
 		ctx.fill();
 //---------------------时间
 		cc.parse(B_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.8);
-		ctx.set_font_size(size/12);
-		string showtext="%d".printf(mm);
-		Cairo.TextExtents ex;
-		ctx.text_extents (showtext, out ex);
-		ctx.move_to(-ex.width/2,ex.height/2);
-		ctx.show_text(showtext);
+		ctx.move_to(0,0);
+		align_show(ctx, mm, size/12);
 		return true;
 	}
 }
