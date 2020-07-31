@@ -8,6 +8,8 @@ using Cairo;
 其他：鼠标1键选择定时。
 */
 //--------------------------------------------------------
+bool mode2;
+
 public class Timer : Gtk.Window {
 	const int size=400;
 	const int MIN = size/10;
@@ -22,6 +24,7 @@ public class Timer : Gtk.Window {
 	Gdk.RGBA cc;
 //----------------------------
 	public Timer() {
+		if(mode2){kp=true; scale = 24;}
 		title = "AT";
 		decorated = false; app_paintable = true;
 		set_visual(this.get_screen().get_rgba_visual());
@@ -55,9 +58,14 @@ public class Timer : Gtk.Window {
 				return true;
 			}
 			if(e.button == 1){	//有效圆环
-				if(kp){	hh=mm; return true; }
-				stdout.printf("at now + %d minutes\n",hh*60+mm);
-				Posix.system("at-gui.bash %d".printf(hh*60+mm));
+				if(kp){	hh=mm; if(mode2){kp=false; scale = 60; queue_draw();}; return true; }
+				if(mode2){
+					stdout.printf("at %d:%d\n",hh,mm);
+					Posix.system("at-gui.bash %d %d".printf(hh,mm));
+					} else {
+					stdout.printf("at now + %d minutes\n",hh*60+mm);
+					Posix.system("at-gui.bash %d".printf(hh*60+mm));
+					}
 	//~ echo 'export DISPLAY=:0.0 && /home/eexpss/bin/rockpng "/home/eexpss/图片/s.png"' |\at "now + 1 minutes"
 				Gtk.main_quit();
 			}
@@ -65,11 +73,13 @@ public class Timer : Gtk.Window {
 		});
 //----------按键事件。
 		key_press_event.connect ((e) => {
+			if(mode2) return true;
 			if(e.keyval == Gdk.Key.Control_L || e.keyval == Gdk.Key.Control_R)
 			{ kp=true; scale = 24; queue_draw(); }
 			return true;
 		});
 		key_release_event.connect ((e) => {
+			if(mode2) return true;
 			if(e.keyval == Gdk.Key.Control_L || e.keyval == Gdk.Key.Control_R)
 			{ kp=false; scale = 60; queue_draw(); }
 			return true;
@@ -135,6 +145,8 @@ public class Timer : Gtk.Window {
 //--------------------------------------------------------
 int main (string[] args) {
 	Gtk.init(ref args);
+// 带任意参数，使用模式2执行，强制选择并输出小时和分钟2个参数。
+	if(args[1]==null) mode2=false; else mode2=true;
 	var ww = new Timer(); ww.show_all();
 	Gtk.main(); return 0;
 }

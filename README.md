@@ -1,12 +1,12 @@
 # at-gui
 A gui interface of "at" command. (linux)
 
-- 鼠标只点一次的at命令提醒软件。Only one click.
+## 延时模式
 
+点击一次，选择延时多少分钟后，提醒。超过60分钟的需求时，可以按住ctrl先选择小时。
 ![at-gui](src/at-gui.png)
 
-- 增加 Ctrl 按下，选择小时。仅在选择分钟后结束。
+## 定时模式
+
+需要点击2次，选择小时，分钟。
 ![at-gui-hour](src/at-gui-hour.png)
-
-
-- 提醒时，有一个东西在摇晃。Something is rocking when remind.

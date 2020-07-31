@@ -1,10 +1,10 @@
 [Desktop Entry]
-Name=AT gui
-Name[zh_CN]=AT命令图形界面
+Name=AT gui-alarm
+Name[zh_CN]=AT命令图形界面-定时
 Comment=AT gui interface
 Comment[zh_CN]=AT命令图形界面
 Categories=Office;
-Exec=at-gui
+Exec=at-gui x
 Icon=at-gui.png
 Terminal=false
 Type=Application
