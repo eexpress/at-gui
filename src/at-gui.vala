@@ -22,6 +22,7 @@ public class Timer : Gtk.Window {
 	int mm = 0;
 	int hh = 0; bool kp = false; int scale = 60; double degree = 0;
 	Gdk.RGBA cc;
+	bool tip = false;
 //----------------------------
 	public Timer() {
 		if(mode2){kp=true; scale = 24;}
@@ -38,6 +39,7 @@ public class Timer : Gtk.Window {
 			int x; int y;
 			x=(int)(e.x-size/2); y=(int)(e.y-size/2);
 			int d=(int)Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
+			tip = d<MIN?true:false;queue_draw();
 			if(d<MIN || d>MAX) return true;	//有效圆环
 			degree=Math.atan2(y, x)/(Math.PI/180)+90;
 			if(degree<0) degree+=360;
@@ -86,9 +88,9 @@ public class Timer : Gtk.Window {
 		});
 	}
 //---------------------
-	private void align_show(Context ctx, int i, double size){
+	private void align_show(Context ctx, string showtext, double size){
 		ctx.set_font_size(size);
-		string showtext="%d".printf(i);
+//~ 		string showtext="%d".printf(i);
 		Cairo.TextExtents ex;
 		ctx.text_extents (showtext, out ex);
 		ctx.rel_move_to(-ex.width/2,ex.height/2);
@@ -125,7 +127,8 @@ public class Timer : Gtk.Window {
 			if(i%(scale/4)==0){
 				if(kp){ctx.rel_line_to(0,10);}
 				ctx.rel_move_to(0,20);
-				align_show(ctx, i, size/20);
+//~ 				align_show(ctx, "%d".printf(i), size/20);
+				align_show(ctx, i.to_string(), size/20);
 				}
 			ctx.stroke();
 			ctx.rotate((360/scale)*(Math.PI/180));	//6度一个刻度
@@ -135,10 +138,15 @@ public class Timer : Gtk.Window {
 		cc.parse(F_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 1);
 		ctx.arc(0,0,MIN,0,2*Math.PI);
 		ctx.fill();
+//---------------------提示
+		if(tip){
+			ctx.move_to(0,size/7);
+			align_show(ctx, "move|exit ",size/15);
+			}
 //---------------------时间
 		cc.parse(B_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.8);
 		ctx.move_to(0,0);
-		align_show(ctx, mm, size/12);
+		align_show(ctx, mm.to_string(), size/12);
 		return true;
 	}
 }
