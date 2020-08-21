@@ -9,7 +9,9 @@ A gui interface of "at" command. (linux)
 ## 定时模式
 
 需要点击2次，选择小时，分钟。
-![at-gui-h](src/at-gui-h.png)
+小时|分钟
+--|--
+![at-gui-h](src/at-gui-h.png)|![at-gui-m](src/at-gui-m.png)
 
 ## 中途取消
 
