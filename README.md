@@ -17,3 +17,5 @@ A gui interface of "at" command. (linux)
 
 鼠标右键点击中间的白色圆心，可以取消操作。
 
+## 应用程序菜单
+![menu](src/menu.png)
