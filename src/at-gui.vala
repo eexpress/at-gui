@@ -8,7 +8,7 @@ using Cairo;
 其他：鼠标1键选择定时。
 */
 //--------------------------------------------------------
-bool mode2;
+bool mode2;		//定时模式，或者延时模式
 
 public class Timer : Gtk.Window {
 	const int size=400;
@@ -18,6 +18,7 @@ public class Timer : Gtk.Window {
 	const string B_COLOR="#4E4E4E";
 	const string F_COLOR="#CCCCCC";
 	const string M_COLOR="#57C575";
+	const string H_COLOR="#FFBE3B";
 
 	int mm = 0;
 	int hh = 0; bool kp = false; int scale = 60; double degree = 0;
@@ -109,7 +110,8 @@ public class Timer : Gtk.Window {
 		ctx.fill();
 //---------------------增加一个扇形延时显示
 		ctx.save();
-		cc.parse(M_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.6);
+		if(kp){cc.parse(H_COLOR);}else{cc.parse(M_COLOR);}
+		ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.6);
 		ctx.rotate(-Math.PI/2);
 		ctx.move_to(0,0);
 		ctx.arc(0,0,size/2-size/8,0,mm*2*Math.PI/scale);	//阶段性刻度
