@@ -4,9 +4,9 @@ A gui interface of "at" command. (linux)
 ## 延时模式
 
 - 点击一次，选择延时多少分钟后，提醒。
-
 - 超过60分钟的需求时，可以<u>按住ctrl</u>先选择小时。
-  ![at-gui-m](src/at-gui-m.png)
+
+![at-gui-m](src/at-gui-m.png)
 
 ## 定时模式
 
