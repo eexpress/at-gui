@@ -1,0 +1,6 @@
+[Contractor Entry]
+Name=set "AT" reminder picture
+Name[zh_CN]=设为"AT"提醒图片
+Icon=/usr/share/pixmaps/at-gui.png
+MimeType=image/png
+Exec=sh -c "ln -sf %f $HOME/.local/share/at-gui.png"

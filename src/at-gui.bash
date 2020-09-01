@@ -4,11 +4,14 @@
 HOMEPNG="$HOME/.local/share/at-gui.png"
 APPPNG="/usr/share/pixmaps/at-gui.png"
 
-if [ -f $HOMEPNG ]; then ROCKPNG=$HOMEPNG
+if [ -f $HOMEPNG ]; then
+	if [ -L $HOMEPNG ]; then ROCKPNG=`readlink $HOMEPNG`
+	else ROCKPNG=$HOMEPNG
+	fi
 elif [ -f $APPPNG ]; then ROCKPNG=$APPPNG
 fi
 
-EXEC="export DISPLAY=$DISPLAY && /usr/bin/rockpng $ROCKPNG"
+EXEC="export DISPLAY=$DISPLAY && /usr/bin/rockpng \"$ROCKPNG\""
 
 if [ $# == 1 ] ; then	# 一个参数，使用延时几分钟的格式。
 echo  $EXEC|\at "now + $1 minutes"
