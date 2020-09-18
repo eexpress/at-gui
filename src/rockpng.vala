@@ -1,4 +1,5 @@
-//!valac --pkg gtk+-3.0 -X -lm %
+//!valac --pkg gtk+-3.0 -X -lm --pkg libcanberra %
+//~ ⭕ pi libcanberra-dev
 
 using Gtk;
 using Cairo;
@@ -14,7 +15,13 @@ public class swing {
 	public void init() {max_angle=10; angle=0; direct=1; cnt=6;}
 //---------------------
 	public bool need_draw_swing() {
-		if(max_angle==0) {init(); return false;}
+		if(max_angle==0) {
+			init();
+			Canberra.Context sound;
+			Canberra.Context.create(out sound);
+			sound.play (0, Canberra.PROP_EVENT_ID, "complete", Canberra.PROP_EVENT_DESCRIPTION, "Timer");
+			Thread.usleep (1000000);
+			return false;}
 		angle+=direct*(max_angle*cos_a[cnt]);
 		if((cnt==cos_a.length-1 && direct==1) || (cnt==0 && direct==-1)) {direct=direct==1?-1:1; max_angle--;}
 		else cnt+=direct;	// 转向时，停止一次变动，更加柔和。
@@ -41,7 +48,7 @@ class RockPNG : Gtk.Window {
 		set_position(MOUSE);
 		set_visual(this.get_screen().get_rgba_visual());
 		set_keep_above (true);
-stdout.printf("%s ==== Version 0.01 ==== eexpss\n",title);
+stdout.printf("%s ==== Version 0.02 ==== eexpss\n",title);
 //允许鼠标事件
 		destroy.connect (Gtk.main_quit);
 		add_events (Gdk.EventMask.BUTTON_PRESS_MASK|Gdk.EventMask.SCROLL_MASK);

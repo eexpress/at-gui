@@ -1,0 +1,5 @@
+[Contractor Entry]
+Name=Rock PNG
+Icon=/usr/share/pixmaps/at-gui.png
+MimeType=image/png
+Exec=rockpng %f
