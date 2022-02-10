@@ -5,10 +5,10 @@ A gui interface of "at" command. (linux)
 
 缺省`延时模式`。按ctrl设置小时后，是`定时模式`。
 
-![ss0](src/ss0.png)
-![ss1](src/ss1.png)
-![ss2](src/ss2.png)
-![ss3](src/ss3.png)
+延时模式|定时模式
+---|---
+![ss0](src/ss0.png)|![ss2](src/ss2.png)
+![ss1](src/ss1.png)|![ss3](src/ss3.png)
 
 ## 中途取消
 
