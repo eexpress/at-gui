@@ -14,9 +14,6 @@ A gui interface of "at" command. (linux)
 
 鼠标右键点击中间的白色圆心，可以取消操作。（左键拖动）
 
-## 应用程序菜单
-![menu](src/menu.png)
-
 ## 文件管理区右键菜单
 
 设置任意PNG图片为<u>**当前**</u>的提醒的图片。
