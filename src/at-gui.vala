@@ -8,8 +8,6 @@ using Cairo;
 其他：鼠标1键选择定时。
 */
 //--------------------------------------------------------
-bool mode2;		//定时模式，或者延时模式
-
 public class Timer : Gtk.Window {
 	const int size=400;
 	const int MIN = size/10;
@@ -21,12 +19,12 @@ public class Timer : Gtk.Window {
 	const string H_COLOR="#FFBE3B";
 
 	int mm = 0;
-	int hh = 0; bool kp = false; int scale = 60; double degree = 0;
+	int hh = -1;	//缺省延时模式。按ctrl设置小时后，是定时模式。
+	bool kp = false; int scale = 60; double degree = 0;
 	Gdk.RGBA cc;
 	bool tip = false;
 //----------------------------
 	public Timer() {
-		if(mode2){kp=true; scale = 24;}
 		title = "AT";
 		decorated = false; app_paintable = true;
 		set_visual(this.get_screen().get_rgba_visual());
@@ -61,14 +59,14 @@ public class Timer : Gtk.Window {
 				return true;
 			}
 			if(e.button == 1){	//有效圆环
-				if(kp){	hh=mm; if(mode2){kp=false; scale = 60; queue_draw();}; return true; }
-				if(mode2){
+				if(kp){	hh=mm; return true; }
+				if(hh<0){
+					stdout.printf("at now + %d minutes\n",mm);
+					Posix.system("at-gui.bash %d".printf(mm));
+				} else {
 					stdout.printf("at %d:%d\n",hh,mm);
 					Posix.system("at-gui.bash %d %d".printf(hh,mm));
-					} else {
-					stdout.printf("at now + %d minutes\n",hh*60+mm);
-					Posix.system("at-gui.bash %d".printf(hh*60+mm));
-					}
+				}
 	//~ echo 'export DISPLAY=:0.0 && /home/eexpss/bin/rockpng "/home/eexpss/图片/s.png"' |\at "now + 1 minutes"
 				Gtk.main_quit();
 			}
@@ -76,13 +74,11 @@ public class Timer : Gtk.Window {
 		});
 //----------按键事件。
 		key_press_event.connect ((e) => {
-			if(mode2) return true;
 			if(e.keyval == Gdk.Key.Control_L || e.keyval == Gdk.Key.Control_R)
 			{ kp=true; scale = 24; queue_draw(); }
 			return true;
 		});
 		key_release_event.connect ((e) => {
-			if(mode2) return true;
 			if(e.keyval == Gdk.Key.Control_L || e.keyval == Gdk.Key.Control_R)
 			{ kp=false; scale = 60; queue_draw(); }
 			return true;
@@ -142,9 +138,16 @@ public class Timer : Gtk.Window {
 		ctx.fill();
 //---------------------提示
 		if(tip){
-			ctx.move_to(0,size/7);
-			align_show(ctx, "move|exit ",size/15);
-			}
+			ctx.move_to(0,-size/6);
+			align_show(ctx, (hh<0)?"延时模式":"定时模式",size/15);
+			ctx.move_to(0,size/6);
+			align_show(ctx, "移动|退出 ",size/15);
+		}else{
+			ctx.move_to(0,-size/6);
+			align_show(ctx, kp?".":"按ctrl设置定时",size/15);
+			ctx.move_to(0,size/6);
+			align_show(ctx, kp?"点":"分",size/15);
+		}
 //---------------------时间
 		cc.parse(B_COLOR); ctx.set_source_rgba (cc.red, cc.green, cc.blue, 0.8);
 		ctx.move_to(0,0);
@@ -155,8 +158,6 @@ public class Timer : Gtk.Window {
 //--------------------------------------------------------
 int main (string[] args) {
 	Gtk.init(ref args);
-// 带任意参数，使用模式2执行，强制选择并输出小时和分钟2个参数。
-	if(args[1]==null) mode2=false; else mode2=true;
 	var ww = new Timer(); ww.show_all();
 	Gtk.main(); return 0;
 }

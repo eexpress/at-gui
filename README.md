@@ -1,19 +1,14 @@
 # at-gui
 A gui interface of "at" command. (linux)
 
-## 延时模式
+## 两种模式
 
-- 点击一次，选择延时多少分钟后，提醒。
-- 超过60分钟的需求时，可以<u>按住ctrl</u>先选择小时。
+缺省`延时模式`。按ctrl设置小时后，是`定时模式`。
 
-![at-gui-m](src/at-gui-m.png)
-
-## 定时模式
-
-需要点击2次，选择小时，分钟。
-小时|分钟
---|--
-![at-gui-h](src/at-gui-h.png)|![at-gui-m](src/at-gui-m.png)
+![ss0](src/ss0.png)
+![ss1](src/ss1.png)
+![ss2](src/ss2.png)
+![ss3](src/ss3.png)
 
 ## 中途取消
 
@@ -28,11 +23,10 @@ A gui interface of "at" command. (linux)
 
 - io.elementary.files （使用contract机制）
 
-![io.elementary.files右键菜单](src/io.elementary.files右键菜单.png)
+![右键菜单](src/io.elementary.files.ContextMenu.png)
 
 - nautilus（使用script机制）还没做，没nautilus。
 - 手动设置，软件会跟随链接。
 `ln -sf %f $HOME/.local/share/at-gui.png`
 - 准备一些有意义的图片吧。
- 
- ![屏幕截图1](src/屏幕截图1.png)
+

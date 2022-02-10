@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=AT gui-delay
-Name[zh_CN]=AT-延时
+Name=AT-Countdown-Timer
+Name[zh_CN]=AT-延时-定时
 Comment=AT gui interface
 Comment[zh_CN]=AT命令图形界面
 Categories=Office;
@@ -8,4 +8,4 @@ Exec=at-gui
 Icon=at-gui.png
 Terminal=false
 Type=Application
-Keywords=AT;Timer;
+Keywords=AT;Timer;Countdown
